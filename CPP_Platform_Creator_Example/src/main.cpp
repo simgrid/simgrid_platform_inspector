@@ -33,7 +33,6 @@ public:
         zone2->set_gateway(z2_h1->get_netpoint());
         zone2->seal();
 
-        std::cerr << "ADDING ZONE ROUTE\n";
         zone_world->add_route(zone1, zone2, {zw_l});
         zone_world->seal();
     }
