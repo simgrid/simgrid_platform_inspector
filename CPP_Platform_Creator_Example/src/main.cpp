@@ -25,11 +25,13 @@ public:
         auto zone2 = sg4::create_full_zone("Zone2");
         zone2->set_parent(zone_world);
         auto z2_h1 = zone2->create_host("H2.1", "10Gf");
+        auto z2_h1_d1 = z2_h1->create_disk("mydisk", "100Mbps", "100Mbps");
         z2_h1->set_core_count(10)->seal();
         auto z2_h2 = zone2->create_host("H2.2", "10Gf");
         z2_h2->set_core_count(20)->seal();
         auto z2_l = zone2->create_link("L2.1", "100MBps")->set_latency("1ns")->seal();
         zone2->add_route(z2_h1, z2_h2, {z2_l});
+        auto zone2_router = zone2->add_router("some_router");
         zone2->set_gateway(z2_h1->get_netpoint());
         zone2->seal();
 
