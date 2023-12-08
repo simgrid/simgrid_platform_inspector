@@ -25,6 +25,10 @@
       <route src="host1.2" dst="router1.1">
 	      <link_ctn id="internal1.2"/>
       </route>
+      <route src="host1.1" dst="router1.2">
+	      <link_ctn id="internal1.1"/>
+	      <link_ctn id="internal1.2"/>
+      </route>
     </zone>
 
     <zone id="zone2" routing="None">
