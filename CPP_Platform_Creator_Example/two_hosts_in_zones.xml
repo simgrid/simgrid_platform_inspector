@@ -35,10 +35,10 @@
       <host id="host2.1" speed="1Gf"/>
     </zone>
 
-    <link id="link1" bandwidth="100kBps" latency="10ms"/>
+    <link id="link_wan" bandwidth="100kBps" latency="10ms"/>
 
-    <zoneRoute src="zone1" dst="zone2" gw_src="host1" gw_dst="host3">
-      <link_ctn id="link1"/>
+    <zoneRoute src="zone1" dst="zone2" gw_src="router1.1" gw_dst="host2.1">
+      <link_ctn id="link_wan"/>
     </zoneRoute>
   </zone>
 </platform>
