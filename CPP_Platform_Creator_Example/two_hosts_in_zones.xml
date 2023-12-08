@@ -4,16 +4,31 @@
   <zone id="world" routing="Full">
 
     <zone id="zone1" routing="None">
-      <host id="host1" speed="1Gf"/>
-      <host id="host2" speed="1Gf"/>
-      <link id="internal" bandwidth="100kBps" latency="10ms"/>
-      <route src="host1" dst="host2">
-	      <link_ctn id="internal"/>
+      <host id="host1.1" speed="1Gf">
+          <disk id="hard_drive1" read_bw="100MBps" write_bw="100MBps">
+             <prop id="size" value="5000GiB"/>
+          </disk> 
+           <disk id="hard_drive2" read_bw="200MBps" write_bw="150MBps">
+             <prop id="size" value="1000GiB"/>
+          </disk> 
+      </host>
+      <host id="host1.2" speed="1Gf"/>
+      <router id="router1.1">
+	      <prop id="whatever" value="stuff" />
+      </router>
+      <link id="internal1.1" bandwidth="100kBps" latency="10us"/>
+      <link id="internal1.2" bandwidth="200kBps" latency="10us"/>
+
+      <route src="host1.1" dst="router1.1">
+	      <link_ctn id="internal1.1"/>
+      </route>
+      <route src="host1.2" dst="router1.1">
+	      <link_ctn id="internal1.2"/>
       </route>
     </zone>
 
     <zone id="zone2" routing="None">
-      <host id="host3" speed="1Gf"/>
+      <host id="host2.1" speed="1Gf"/>
     </zone>
 
     <link id="link1" bandwidth="100kBps" latency="10ms"/>
