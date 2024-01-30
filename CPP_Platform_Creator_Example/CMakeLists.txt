@@ -16,12 +16,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 # Find SimGrid, and Boost
 find_package(SimGrid REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
+
 
 # include directories
 include_directories(include/ /usr/local/include/ /opt/local/include/ ${SimGrid_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 # source files
 set(SOURCE_FILES
+        src/PlatformCreator.hpp
         src/main.cpp
         )
 

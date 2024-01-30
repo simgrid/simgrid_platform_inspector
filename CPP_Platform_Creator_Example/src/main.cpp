@@ -1,52 +1,91 @@
 #include <iostream>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <boost/program_options.hpp>
 
+#include "PlatformCreator.hpp"
+
+namespace po = boost::program_options;
 namespace sg4 = simgrid::s4u;
 
-
-class PlatformCreator {
-
-public:
-    static void create_platform() {
-
-        // Create the top-level zone
-        auto zone_world = sg4::create_full_zone("World");
-        auto zw_l = zone_world->create_link("Internet", "100GBps")->set_latency("100ms");
-
-        // Create Zone1
-        auto zone1 = sg4::create_full_zone("Zone1");
-        zone1->set_parent(zone_world);
-        auto z1_h1 = zone1->create_host("H1.1", "10Gf");
-        z1_h1->set_core_count(10)->seal();
-        zone1->set_gateway(z1_h1->get_netpoint());
-        zone1->seal();
-
-        // Create Zone2
-        auto zone2 = sg4::create_full_zone("Zone2");
-        zone2->set_parent(zone_world);
-        auto z2_h1 = zone2->create_host("H2.1", "10Gf");
-        z2_h1->set_property("key", "12");
-        z2_h1->set_property("stuff", "hello");
-        auto z2_h1_d1 = z2_h1->create_disk("mydisk", "100Mbps", "100Mbps");
-        z2_h1->set_core_count(10)->seal();
-        auto z2_h2 = zone2->create_host("H2.2", "10Gf");
-        z2_h2->set_core_count(20)->seal();
-        auto z2_l = zone2->create_link("L2.1", "100MBps")->set_latency("1ns")->seal();
-        zone2->add_route(z2_h1, z2_h2, {z2_l});
-        auto zone2_router = zone2->create_router("some_router");
-        zone2->set_gateway(z2_h1->get_netpoint());
-        zone2->seal();
-
-        zone_world->add_route(zone1, zone2, {zw_l});
-        zone_world->seal();
-    }
-};
-
 int main(int argc, char **argv) {
+
+    std::string hostnames;
+    po::options_description desc("Allowed options");
+    desc.add_options()
+            ("help",
+             "Show this help message\n")
+            ("show_routes", po::value<std::string>(&hostnames)->value_name("<list of host names>"),
+             "comma-separated list of hostnames (no white space)\n")
+            ;
+
+    // Parse command-line arguments
+    po::variables_map vm;
+    po::store(
+            po::parse_command_line(argc, argv, desc),
+            vm
+    );
+
+    try {
+        // Print help message and exit if needed
+        if (vm.count("help")) {
+            std::cerr << desc << "\n";
+            exit(0);
+        }
+        // Throw whatever exception in case argument values are erroneous
+        po::notify(vm);
+    } catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        exit(1);
+    }
+
     PlatformCreator::create_platform();
     auto num_hosts = sg4::Engine::get_instance()->get_all_hosts().size();
     std::cerr << "Created a platform with " << num_hosts << " hosts\n";
+
+    if (vm.count("show_routes")) {
+        std::vector<std::string> tokens;
+        if (hostnames == "all") {
+            std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+            std::vector<std::string> hostname_list;
+            for (auto h: host_list) {
+                tokens.push_back(h->get_name());
+            }
+        } else {
+            std::stringstream ss(hostnames);
+            std::string item;
+            while (getline(ss, item, ',')) {
+                tokens.push_back(item);
+            }
+        }
+        for (int i=0; i < tokens.size(); i++) {
+            for (int j=i+1; j < tokens.size(); j++) {
+                auto h1 = tokens.at(i);
+                auto h2 = tokens.at(j);
+                if (h1 != h2) {
+                    auto host1 = simgrid::s4u::Host::by_name_or_null(h1);
+                    auto host2 = simgrid::s4u::Host::by_name_or_null(h2);
+                    if (host1 == nullptr) {
+                        std::cerr << "Unknown host: " << h1 << "\n";
+                        exit(1);
+                    }
+                    if (host2 == nullptr) {
+                        std::cerr << "Unknown host: " << h2 << "\n";
+                        exit(1);
+                    }
+                    std::vector<simgrid::s4u::Link*> links;
+                    double latency = 0.0;
+                    host1->route_to(host2, links, &latency);
+                    std::cout << "Route from " << h1 << " to " << h2 << ":\n";
+                    for (const auto &link : links) {
+                        std::cout << "  Link: " << link->get_name() << "\n";
+                    }
+                    std::cout << "  Total latency: " << latency << " (sec)\n";
+                }
+            }
+        }
+    }
+
     return 0;
 }
 
