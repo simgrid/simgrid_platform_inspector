@@ -22,7 +22,7 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(/usr/local/include/ /opt/local/include/ ${SimGrid_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 # Executable
-add_executable(simgrid_platform_explorer src/main.cpp)
+add_executable(simgrid_platform_explorer main.cpp)
 target_link_libraries(simgrid_platform_explorer
         ${SimGrid_LIBRARY}
         ${Boost_LIBRARIES}
@@ -36,9 +36,9 @@ add_custom_target(shared_object_file ALL
 # Custom command for the .so file
 add_custom_command(
         OUTPUT platform_creator.so
-        COMMAND g++ --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o
+        COMMAND g++ --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/platform_creator.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o
         COMMAND g++ -shared ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o -o platform_creator.so ${SimGrid_LIBRARY}
-        DEPENDS ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp
+        DEPENDS ${CMAKE_SOURCE_DIR}/platform_creator.cpp
         )
 
 install(TARGETS simgrid_platform_explorer DESTINATION bin)
