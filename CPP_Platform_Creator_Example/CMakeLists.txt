@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.2)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
-project(platform-creator)
+project(simgrid-platform-explorer)
 
 # Disable annoying warnings
 add_definitions("-DBOOST_ALLOW_DEPRECATED_HEADERS")
@@ -18,22 +18,27 @@ find_package(SimGrid REQUIRED)
 find_package(Boost REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 
-
 # include directories
-include_directories(include/ /usr/local/include/ /opt/local/include/ ${SimGrid_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+include_directories(/usr/local/include/ /opt/local/include/ ${SimGrid_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
-# source files
-set(SOURCE_FILES
-        src/PlatformCreator.hpp
-        src/main.cpp
-        )
-
-# generating the executable
-add_executable(example_simgrid_platform_creator ${SOURCE_FILES})
-
-target_link_libraries(example_simgrid_platform_creator
+# Executable
+add_executable(simgrid_platform_explorer src/main.cpp)
+target_link_libraries(simgrid_platform_explorer
         ${SimGrid_LIBRARY}
         ${Boost_LIBRARIES}
         )
 
-install(TARGETS example_simgrid_platform_creator DESTINATION bin)
+# Custom target for the .so file
+add_custom_target(shared_object_file ALL
+        DEPENDS
+        ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.so)
+
+# Custom command for the .so file
+add_custom_command(
+        OUTPUT platform_creator.so
+        COMMAND g++ --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o
+        COMMAND g++ -shared ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o -o platform_creator.so ${SimGrid_LIBRARY}
+        DEPENDS ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp
+        )
+
+install(TARGETS simgrid_platform_explorer DESTINATION bin)

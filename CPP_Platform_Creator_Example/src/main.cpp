@@ -1,9 +1,6 @@
 #include <iostream>
-#include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u.hpp>
 #include <boost/program_options.hpp>
-
-#include "PlatformCreator.hpp"
 
 namespace po = boost::program_options;
 namespace sg4 = simgrid::s4u;
@@ -11,37 +8,39 @@ namespace sg4 = simgrid::s4u;
 int main(int argc, char **argv) {
 
     std::string hostnames;
-    po::options_description desc("Allowed options");
+    std::string path_to_so_file;
+    po::options_description desc("Usage");
     desc.add_options()
             ("help",
              "Show this help message\n")
+            ("so", po::value<std::string>(&path_to_so_file)->required()->value_name("<path to a .so file>"),
+             "path to a .so file that implements the load_platform() function\n")
             ("show_routes", po::value<std::string>(&hostnames)->value_name("<list of host names>"),
              "comma-separated list of hostnames (no white space)\n")
             ;
 
     // Parse command-line arguments
     po::variables_map vm;
-    po::store(
-            po::parse_command_line(argc, argv, desc),
-            vm
-    );
-
     try {
+        po::store(po::parse_command_line(argc, argv, desc), vm);
         // Print help message and exit if needed
         if (vm.count("help")) {
-            std::cerr << desc << "\n";
+            std::cerr << desc;
+            std::cerr << "Example: " << argv[0] << " --so ./platform_creator.so --show_hosts\n\n";
             exit(0);
         }
         // Throw whatever exception in case argument values are erroneous
         po::notify(vm);
     } catch (std::exception &e) {
-        std::cerr << "Error: " << e.what() << "\n";
+        std::cerr << "Invalid arguments!" << "\n\n";
+        std::cerr << desc;
+        std::cerr << "Example: " << argv[0] << " --so ./platform_creator.so --show_hosts\n\n";
         exit(1);
     }
 
-    PlatformCreator::create_platform();
+    sg4::Engine::get_instance()->load_platform(path_to_so_file);
     auto num_hosts = sg4::Engine::get_instance()->get_all_hosts().size();
-    std::cerr << "Created a platform with " << num_hosts << " hosts\n";
+    std::cerr << "Platform successfully created\n";
 
     if (vm.count("show_routes")) {
         std::vector<std::string> tokens;
