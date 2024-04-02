@@ -46,6 +46,14 @@ int main(int argc, char **argv) {
     auto num_hosts = sg4::Engine::get_instance()->get_all_hosts().size();
     std::cerr << "Platform successfully created\n";
 
+    if (vm.count("show_hosts")) {
+        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        for (auto h: host_list) {
+            std::cout << " Hosts: " << h << "(#cores=" << h.get_core_count() << ", speed=" << h.get.speed() << ")\n";
+            std::cout << "Properties: " << h.get_properties() << "\n";
+        }
+    }
+
     if (vm.count("show_routes")) {
         std::vector<std::string> tokens;
         if (hostnames == "all") {
