@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
     if (vm.count("show_hosts")) {
         std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
         for (auto h: host_list) {
-            std::cout << " Hosts: " << h << "(#cores=" << h.get_core_count() << ", speed=" << h.get.speed() << ")\n";
-            std::cout << "Properties: " << h.get_properties() << "\n";
+            std::cout << " Hosts: " << h->get_name() << "(#cores=" << h->get_core_count() << ", speed=" << h->get.speed() << ")\n";
+            std::cout << "Properties: " << h->get_properties() << "\n";
         }
     }
 
