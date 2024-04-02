@@ -37,7 +37,7 @@ add_custom_target(shared_object_file ALL
 add_custom_command(
         OUTPUT platform_creator.so
         COMMAND g++ --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/platform_creator.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o
-        COMMAND g++ -shared ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o -o platform_creator.so ${SimGrid_LIBRARY}
+	COMMAND g++ -shared -fPIC ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o -o platform_creator.so ${SimGrid_LIBRARY}
         DEPENDS ${CMAKE_SOURCE_DIR}/platform_creator.cpp
         )
 
