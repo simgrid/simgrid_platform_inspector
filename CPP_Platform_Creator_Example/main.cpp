@@ -17,6 +17,8 @@ int main(int argc, char **argv) {
              "path to a .so file that implements the load_platform() function\n")
             ("show_hosts",
              "Show name and information for all the hosts in the platform\n")
+            ("show_disks",
+             "Show name and information for all the disks in the platform\n")
             ("show_links",
              "Show name and information for all the links platform\n")
             ("show_routes", po::value<std::string>(&hostnames)->value_name("<comma-separated list of host names>"),
@@ -53,6 +55,19 @@ int main(int argc, char **argv) {
             std::cout << "Properties: " << h->get_properties() << "\n";
         }
     }
+
+    if (vm.count("show_disks")) {
+        std::vector<std::string> tokens;
+        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        for (auto h: host_list) {
+            std::vector<simgrid::s4u::Disk *> disk_list = h->get_disks();
+            for (auto d: disk_list) {
+            	std::cout << " Disks: " << d->get_name() << "(read bandwidth=" << d->get_read_bandwidth() << ", write bandwidth=" << d->get_write_bandwidth() << ")\n";
+                std::cout << " Properties: " << d->get_properties() << "\n";
+            }
+        }
+    }
+
 
     if (vm.count("show_routes")) {
         std::vector<std::string> tokens;
