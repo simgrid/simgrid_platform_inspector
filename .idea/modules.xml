@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/simgrid-platform-explorer.iml" filepath="$PROJECT_DIR$/.idea/simgrid-platform-explorer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/simgrid_platform_viz_edit_export.iml" filepath="$PROJECT_DIR$/.idea/simgrid_platform_viz_edit_export.iml" />
     </modules>
   </component>
