@@ -17,6 +17,8 @@ int main(int argc, char **argv) {
              "path to a .so file that implements the load_platform() function\n")
             ("show_hosts",
              "Show name and information for all the hosts in the platform\n")
+            ("show_disks",
+             "Show name and information for all the disks in the platform\n")
             ("show_links",
              "Show name and information for all the links platform\n")
             ("show_routes", po::value<std::string>(&hostnames)->value_name("<comma-separated list of host names>"),
@@ -45,6 +47,54 @@ int main(int argc, char **argv) {
     sg4::Engine::get_instance()->load_platform(path_to_so_file);
     auto num_hosts = sg4::Engine::get_instance()->get_all_hosts().size();
     std::cerr << "Platform successfully created\n";
+
+    if (vm.count("show_hosts")) {
+        std::cout << "Hosts:\n";
+        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        for (auto const &h: host_list) {
+            std::cout << "  - Host: " << h->get_name() << "(#cores=" << h->get_core_count() << ", speed=" << h->get_speed() << " fps)\n";
+            if (not h->get_properties()->empty()) {
+                std::cout << "    - Properties:\n";
+                for (auto const &p: *h->get_properties()) {
+                    std::cout << "       - " << p.first << ": " << p.second << "\n";
+                }
+            }
+        }
+    }
+
+    if (vm.count("show_links")) {
+        std::cout << "Links:\n";
+        std::vector<simgrid::s4u::Link *> link_list = simgrid::s4u::Engine::get_instance()->get_all_links();
+        for (auto const &l: link_list) {
+            std::cout << "  - Link: " << l->get_name() << "(bandwidth=" << l->get_bandwidth() << " bps, latency=" << l->get_latency() << " s)\n";
+            if (not l->get_properties()->empty()) {
+                std::cout << "    - Properties:\n";
+                for (auto const &p: *l->get_properties()) {
+                    std::cout << "       - " << p.first << ": " << p.second << "\n";
+                }
+            }
+        }
+    }
+
+
+    if (vm.count("show_disks")) {
+        std::cout << "Disks:\n";
+        std::vector<std::string> tokens;
+        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        for (auto const &h: host_list) {
+            std::vector<simgrid::s4u::Disk *> disk_list = h->get_disks();
+            for (auto const &d: disk_list) {
+            	std::cout << "  - Disk: " << d->get_name() << " (host: " << h->get_name() << ", read bandwidth=" << d->get_read_bandwidth() << " bps, write bandwidth=" << d->get_write_bandwidth() << " bps)\n";
+                if (not d->get_properties()->empty()) {
+                    std::cout << "    - Properties:\n";
+                    for (auto const &p: *d->get_properties()) {
+                        std::cout << "       - " << p.first << ": " << p.second << "\n";
+                    }
+                }
+            }
+        }
+    }
+
 
     if (vm.count("show_routes")) {
         std::vector<std::string> tokens;

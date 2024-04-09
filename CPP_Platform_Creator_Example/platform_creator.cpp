@@ -25,6 +25,7 @@ void load_platform(const sg4::Engine &e)
     z2_h1->set_property("key", "12");
     z2_h1->set_property("stuff", "hello");
     auto z2_h1_d1 = z2_h1->create_disk("mydisk", "100Mbps", "100Mbps");
+    z2_h1_d1->set_property("whatever", "hello");
     z2_h1->set_core_count(10)->seal();
     auto z2_h2 = zone2->create_host("H2.2", "10Gf");
     z2_h2->set_core_count(20)->seal();
