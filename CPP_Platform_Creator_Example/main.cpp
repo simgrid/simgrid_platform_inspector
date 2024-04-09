@@ -49,21 +49,48 @@ int main(int argc, char **argv) {
     std::cerr << "Platform successfully created\n";
 
     if (vm.count("show_hosts")) {
+        std::cout << "Hosts:\n";
         std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-        for (auto h: host_list) {
-            std::cout << " Hosts: " << h->get_name() << "(#cores=" << h->get_core_count() << ", speed=" << h->get_speed() << ")\n";
-            std::cout << "Properties: " << h->get_properties() << "\n";
+        for (auto const &h: host_list) {
+            std::cout << "  - Host: " << h->get_name() << "(#cores=" << h->get_core_count() << ", speed=" << h->get_speed() << " fps)\n";
+            if (not h->get_properties()->empty()) {
+                std::cout << "    - Properties:\n";
+                for (auto const &p: *h->get_properties()) {
+                    std::cout << "       - " << p.first << ": " << p.second << "\n";
+                }
+            }
         }
     }
 
+    if (vm.count("show_links")) {
+        std::cout << "Links:\n";
+        std::vector<simgrid::s4u::Link *> link_list = simgrid::s4u::Engine::get_instance()->get_all_links();
+        for (auto const &l: link_list) {
+            std::cout << "  - Link: " << l->get_name() << "(bandwidth=" << l->get_bandwidth() << " bps, latency=" << l->get_latency() << " s)\n";
+            if (not l->get_properties()->empty()) {
+                std::cout << "    - Properties:\n";
+                for (auto const &p: *l->get_properties()) {
+                    std::cout << "       - " << p.first << ": " << p.second << "\n";
+                }
+            }
+        }
+    }
+
+
     if (vm.count("show_disks")) {
+        std::cout << "Disks:\n";
         std::vector<std::string> tokens;
         std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-        for (auto h: host_list) {
+        for (auto const &h: host_list) {
             std::vector<simgrid::s4u::Disk *> disk_list = h->get_disks();
-            for (auto d: disk_list) {
-            	std::cout << " Disks: " << d->get_name() << "(read bandwidth=" << d->get_read_bandwidth() << ", write bandwidth=" << d->get_write_bandwidth() << ")\n";
-                std::cout << " Properties: " << d->get_properties() << "\n";
+            for (auto const &d: disk_list) {
+            	std::cout << "  - Disk: " << d->get_name() << " (host: " << h->get_name() << ", read bandwidth=" << d->get_read_bandwidth() << " bps, write bandwidth=" << d->get_write_bandwidth() << " bps)\n";
+                if (not d->get_properties()->empty()) {
+                    std::cout << "    - Properties:\n";
+                    for (auto const &p: *d->get_properties()) {
+                        std::cout << "       - " << p.first << ": " << p.second << "\n";
+                    }
+                }
             }
         }
     }
