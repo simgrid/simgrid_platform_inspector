@@ -35,6 +35,68 @@ void load_platform(const sg4::Engine &e)
     zone2->set_gateway(z2_h1->get_netpoint());
     zone2->seal();
 
+    // Create Zone3 (a Cluster WITHOUT a backbone)
+    // <cluster id="datacenter" prefix="c-"
+    //                          suffix=".me"
+    //                          radical="0-9"
+    //                          speed="1Gf"
+    //                          bw="125MBps"
+    //                          lat="50us"
+    //                          router_id="router1"/>
+        auto zone3 = sg4::create_star_zone("Zone3");
+    {
+        zone3->set_parent(zone_world);
+        auto router = zone3->create_router("router1");
+        zone3->set_gateway(router);
+        // If no 'router_id' spec in the xml, the router name
+        // is ${prefix}${cluster_id}_router${suffix}
+        //  ("c-datacenter_router.me")
+        for (int i = 0; i < 10; i++) {
+            std::string hostname = "c-" + std::to_string(i) + ".me";
+            auto host = zone3->create_host(hostname, "1Gf");
+            auto link = zone3->create_link(hostname + "-link", "125MBps")->set_latency("50us");
+            sg4::LinkInRoute my_link(link);
+            zone3->add_route(host, nullptr, {my_link}, true);
+        }
+    }
+        zone3->seal();
+
+    // Create Zone4 (a Cluster WITH a backbone)
+    // <cluster id="datacenter" prefix="d-"
+    //                          suffix=".me"
+    //                          radical="0-9"
+    //                          speed="1Gf"
+    //                          bw="125MBps"
+    //                          lat="50us"
+    //                          bb_bw="10GBps"
+    //                          bb_lat="100us"/>
+    auto zone4 = sg4::create_star_zone("Zone4");
+    {
+        zone4->set_parent(zone_world);
+        auto router = zone4->create_router("c-datacenter_router.me");
+        auto l_bb = zone4->create_link("backbone.me", "10Gbps")->set_latency("100us");
+        for (int i = 0; i < 10; i++) {
+            std::string hostname = "d-" + std::to_string(i) + ".me";
+            auto host = zone4->create_host(hostname, "1Gf");
+            auto link = zone4->create_link(hostname + "-link", "125MBps")->set_latency("50us");
+            sg4::LinkInRoute my_link(link);
+            sg4::LinkInRoute bb_link(l_bb);
+            zone4->add_route(host, nullptr, {my_link, bb_link}, true);
+        }
+        zone4->set_gateway(router);
+        zone4->seal();
+    }
+
+
+
+
     zone_world->add_route(zone1, zone2, {zw_l});
+    zone_world->add_route(zone1, zone4, {zw_l});
+    zone_world->add_route(zone2, zone4, {zw_l});
+    zone_world->add_route(zone1, zone3, {zw_l});
+    zone_world->add_route(zone3, zone4, {zw_l});
+    zone_world->add_route(zone2, zone3, {zw_l});
+
+
     zone_world->seal();
 }
