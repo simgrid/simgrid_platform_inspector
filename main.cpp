@@ -139,6 +139,17 @@ int main(int argc, char **argv) {
         }
     }
 
+    sg4::Actor::create("TestActor", simgrid::s4u::Host::by_name("host602"), []() {
+        auto host = simgrid::s4u::Host::by_name("host602");
+        std::cerr << "ACTOR!\n";
+        host->set_pstate(0);
+        std::cerr << "ACTOR!\n";
+    });
+
+    simgrid::s4u::Engine::get_instance()->run();
+
+
+
 
     return 0;
 }
