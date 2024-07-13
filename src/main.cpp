@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
     desc.add_options()
             ("help",
              "Show this help message\n")
-            ("so", po::value<std::string>(&path_to_so_file)->required()->value_name("<path to a .so file>"),
+            ("platform", po::value<std::string>(&path_to_so_file)->required()->value_name("<path to a .so or .xml file>"),
              "path to a .so file that implements the load_platform() function\n")
             ("show_hosts",
              "Show name and information for all the hosts in the platform\n")
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         // Print help message and exit if needed
         if (vm.count("help")) {
             std::cerr << desc;
-            std::cerr << "Example: " << argv[0] << " --so ./platform_creator.so --show_hosts\n\n";
+            std::cerr << "Example: " << argv[0] << " --platform ./sample_platform.[so|xml] --show_hosts\n\n";
             exit(0);
         }
         // Throw whatever exception in case argument values are erroneous
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     } catch (std::exception &e) {
         std::cerr << "Invalid arguments!" << "\n\n";
         std::cerr << desc;
-        std::cerr << "Example: " << argv[0] << " --so ./platform_creator.so --show_hosts\n\n";
+        std::cerr << "Example: " << argv[0] << " --platform ./sample_platform.[so|xml] --show_hosts\n\n";
         exit(1);
     }
 
@@ -139,14 +139,14 @@ int main(int argc, char **argv) {
         }
     }
 
-    sg4::Actor::create("TestActor", simgrid::s4u::Host::by_name("host602"), []() {
-        auto host = simgrid::s4u::Host::by_name("host602");
-        std::cerr << "ACTOR!\n";
-        host->set_pstate(0);
-        std::cerr << "ACTOR!\n";
-    });
-
-    simgrid::s4u::Engine::get_instance()->run();
+    //sg4::Actor::create("TestActor", simgrid::s4u::Host::by_name("host602"), []() {
+        //auto host = simgrid::s4u::Host::by_name("host602");
+        //std::cerr << "ACTOR!\n";
+        //host->set_pstate(0);
+        //std::cerr << "ACTOR!\n";
+    //});
+//
+    //simgrid::s4u::Engine::get_instance()->run();
 
 
 

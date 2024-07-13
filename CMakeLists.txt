@@ -31,14 +31,14 @@ target_link_libraries(simgrid_platform_explorer
 # Custom target for the .so file
 add_custom_target(shared_object_file ALL
         DEPENDS
-        ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.so)
+        ${CMAKE_CURRENT_BINARY_DIR}/sample_platform.so)
 
 # Custom command for the .so file
 add_custom_command(
-        OUTPUT platform_creator.so
-        COMMAND g++ -fPIC --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o
-	COMMAND g++ -fPIC -shared -fPIC ${CMAKE_CURRENT_BINARY_DIR}/platform_creator.o -o platform_creator.so ${SimGrid_LIBRARY}
-        DEPENDS ${CMAKE_SOURCE_DIR}/src/platform_creator.cpp
+        OUTPUT sample_platform.so
+        COMMAND g++ -fPIC --std=c++17 -Wno-deprecated-builtins -I${SimGrid_INCLUDE_DIR} -I${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/src/sample_platform.cpp -c -o ${CMAKE_CURRENT_BINARY_DIR}/sample_platform.o
+	COMMAND g++ -fPIC -shared -fPIC ${CMAKE_CURRENT_BINARY_DIR}/sample_platform.o -o sample_platform.so ${SimGrid_LIBRARY}
+        DEPENDS ${CMAKE_SOURCE_DIR}/src/sample_platform.cpp
         )
 
 install(TARGETS simgrid_platform_explorer DESTINATION bin)
