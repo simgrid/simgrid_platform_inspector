@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.2)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
-project(simgrid-platform-explorer)
+project(simgrid-platform-inspector)
 
 # Disable annoying warnings
 add_definitions("-DBOOST_ALLOW_DEPRECATED_HEADERS")
@@ -22,8 +22,8 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(/usr/local/include/ /opt/local/include/ ${SimGrid_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 # Executable
-add_executable(simgrid_platform_explorer src/main.cpp)
-target_link_libraries(simgrid_platform_explorer
+add_executable(simgrid_platform_inspector src/main.cpp)
+target_link_libraries(simgrid_platform_inspector
         ${SimGrid_LIBRARY}
         ${Boost_LIBRARIES}
         )
@@ -41,4 +41,4 @@ add_custom_command(
         DEPENDS ${CMAKE_SOURCE_DIR}/src/sample_platform.cpp
         )
 
-install(TARGETS simgrid_platform_explorer DESTINATION bin)
+install(TARGETS simgrid_platform_inspector DESTINATION bin)

@@ -14,15 +14,15 @@ int main(int argc, char **argv) {
             ("help",
              "Show this help message\n")
             ("platform", po::value<std::string>(&path_to_so_file)->required()->value_name("<path to a .so or .xml file>"),
-             "path to a .so file that implements the load_platform() function or to a .xml platform description file\n")
+             "Path to a .so file that implements the load_platform() function or to a .xml platform description file\n")
             ("show_hosts",
-             "Show name and information for all the hosts in the platform\n")
+             "Shows name and information for all the hosts in the platform\n")
             ("show_disks",
-             "Show name and information for all the disks in the platform\n")
+             "Shows name and information for all the disks in the platform\n")
             ("show_links",
-             "Show name and information for all the links platform\n")
+             "Shows name and information for all the links platform\n")
             ("show_routes", po::value<std::string>(&hostnames)->value_name("<comma-separated list of host names>"),
-             "Show routes between all specified hosts\n")
+             "Shows routes between all specified hosts\n")
             ;
 
     // Parse command-line arguments
