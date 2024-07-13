@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
             ("help",
              "Show this help message\n")
             ("platform", po::value<std::string>(&path_to_so_file)->required()->value_name("<path to a .so or .xml file>"),
-             "path to a .so file that implements the load_platform() function\n")
+             "path to a .so file that implements the load_platform() function or to a .xml platform description file\n")
             ("show_hosts",
              "Show name and information for all the hosts in the platform\n")
             ("show_disks",
