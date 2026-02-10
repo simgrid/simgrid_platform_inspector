@@ -44,13 +44,14 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    sg4::Engine::get_instance()->load_platform(path_to_so_file);
-    auto num_hosts = sg4::Engine::get_instance()->get_all_hosts().size();
+    sg4::Engine e(&argc, argv);
+    e.load_platform(path_to_so_file);
+    auto num_hosts = e.get_all_hosts().size();
     std::cerr << "Platform successfully created\n";
 
     if (vm.count("show_hosts")) {
         std::cout << "Hosts:\n";
-        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        std::vector<simgrid::s4u::Host *> host_list = e.get_all_hosts();
         for (auto const &h: host_list) {
             std::cout << "  - Host: " << h->get_name() << "(#cores=" << h->get_core_count() << ", speed=" << h->get_speed() << " fps)\n";
             if (not h->get_properties()->empty()) {
@@ -64,7 +65,7 @@ int main(int argc, char **argv) {
 
     if (vm.count("show_links")) {
         std::cout << "Links:\n";
-        std::vector<simgrid::s4u::Link *> link_list = simgrid::s4u::Engine::get_instance()->get_all_links();
+        std::vector<simgrid::s4u::Link *> link_list = e.get_all_links();
         for (auto const &l: link_list) {
             std::cout << "  - Link: " << l->get_name() << "(bandwidth=" << l->get_bandwidth() << " bps, latency=" << l->get_latency() << " s)\n";
             if (not l->get_properties()->empty()) {
@@ -80,7 +81,7 @@ int main(int argc, char **argv) {
     if (vm.count("show_disks")) {
         std::cout << "Disks:\n";
         std::vector<std::string> tokens;
-        std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+        std::vector<simgrid::s4u::Host *> host_list = e.get_all_hosts();
         for (auto const &h: host_list) {
             std::vector<simgrid::s4u::Disk *> disk_list = h->get_disks();
             for (auto const &d: disk_list) {
@@ -99,7 +100,7 @@ int main(int argc, char **argv) {
     if (vm.count("show_routes")) {
         std::vector<std::string> tokens;
         if (hostnames == "all") {
-            std::vector<simgrid::s4u::Host *> host_list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+            std::vector<simgrid::s4u::Host *> host_list = e.get_all_hosts();
             std::vector<std::string> hostname_list;
             for (auto h: host_list) {
                 tokens.push_back(h->get_name());
@@ -126,9 +127,7 @@ int main(int argc, char **argv) {
                         std::cerr << "Unknown host: " << h2 << "\n";
                         exit(1);
                     }
-                    std::vector<simgrid::s4u::Link*> links;
-                    double latency = 0.0;
-                    host1->route_to(host2, links, &latency);
+                    auto [links, latency] = host1->route_to(host2);
                     std::cout << "Route from " << h1 << " to " << h2 << ":\n";
                     for (const auto &link : links) {
                         std::cout << "  Link: " << link->get_name() << "\n";
