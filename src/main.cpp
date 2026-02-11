@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
 
     sg4::Engine e(&argc, argv);
     e.load_platform(path_to_so_file);
+    e.seal_platform();
     auto num_hosts = e.get_all_hosts().size();
     std::cerr << "Platform successfully created\n";
 
